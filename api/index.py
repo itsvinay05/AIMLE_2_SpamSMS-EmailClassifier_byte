@@ -155,6 +155,7 @@ def api_root():
 
 
 @app.get("/api/health")
+@app.get("/health")
 def health():
     try:
         model = load_model_data()
@@ -171,6 +172,7 @@ def health():
 
 
 @app.get("/api/metrics")
+@app.get("/metrics")
 def get_metrics():
     model = load_model_data()
     return {
@@ -182,6 +184,7 @@ def get_metrics():
 
 
 @app.post("/api/predict")
+@app.post("/predict")
 def predict(req: MessageRequest):
     start = time.perf_counter()
     model = load_model_data()
@@ -200,6 +203,7 @@ def predict(req: MessageRequest):
 
 
 @app.post("/api/batch_predict")
+@app.post("/batch_predict")
 def batch_predict(req: BatchRequest):
     start = time.perf_counter()
     model = load_model_data()
