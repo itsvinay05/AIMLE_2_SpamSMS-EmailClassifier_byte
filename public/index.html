@@ -34,7 +34,6 @@
       <button class="tab-btn" data-tab="tab-metrics">📊 Evaluation & Confusion Matrix</button>
       <button class="tab-btn" data-tab="tab-batch">📁 Bulk Batch Scorer</button>
       <button class="tab-btn" data-tab="tab-tuning">⚙️ Threshold Tuning</button>
-      <button class="tab-btn" data-tab="tab-api">🔌 Vercel REST API</button>
     </div>
   </div>
 
@@ -372,48 +371,6 @@
             </p>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- TAB 7: REST API & CODE -->
-    <section id="tab-api" class="tab-content">
-      <div class="card">
-        <div class="card-title">Vercel Serverless REST API Documentation</div>
-        <div class="card-subtitle">This project deploys a zero-maintenance Python API on Vercel Serverless Functions:</div>
-
-        <h4 style="margin:1rem 0 0.5rem;">1. Single Prediction Endpoint: <code>POST /api/predict</code></h4>
-        <pre><code>curl -X POST "https://your-app.vercel.app/api/predict" \
-  -H "Content-Type: application/json" \
-  -d '{"text": "Congratulations! You have won a prize. Claim now.", "threshold": 0.5, "explain": true}'</code></pre>
-
-        <h4 style="margin:1.25rem 0 0.5rem;">2. Python Integration (<code>requests</code>)</h4>
-        <pre><code>import requests
-
-url = "https://your-app.vercel.app/api/predict"
-payload = {
-    "text": "URGENT: claim your free reward today!",
-    "threshold": 0.5,
-    "explain": True
-}
-response = requests.post(url, json=payload).json()
-print("Prediction:", response["predicted_label"])
-print(f"Confidence: {response['confidence']:.2%}")</code></pre>
-
-        <h4 style="margin:1.25rem 0 0.5rem;">3. JavaScript / Frontend Integration (<code>fetch</code>)</h4>
-        <pre><code>const res = await fetch("/api/predict", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ text: "Are we still meeting at 5 pm?" })
-});
-const data = await res.json();
-console.log(data.predicted_label, data.confidence);</code></pre>
-
-        <h4 style="margin:1.25rem 0 0.5rem;">4. How to Deploy to Vercel</h4>
-        <pre><code># 1. Login to your Vercel account
-npx vercel login
-
-# 2. Deploy in one command from repository root
-npx vercel --prod</code></pre>
       </div>
     </section>
 
