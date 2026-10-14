@@ -1,0 +1,88 @@
+{
+    "environment": {
+        "python_version": "3.14.7",
+        "scikit_learn_version": "1.9.1",
+        "pandas_version": "3.0.6",
+        "random_state": 42
+    },
+    "dataset_audit": {
+        "raw_total_rows": 5574,
+        "clean_total_rows": 5171,
+        "missing_values": {
+            "raw_label": 0,
+            "text": 0
+        },
+        "duplicates_removed": 403,
+        "duplicates_breakdown": {
+            "spam_duplicates": 94,
+            "ham_duplicates": 309
+        },
+        "raw_distribution": {
+            "ham": 4827,
+            "spam": 747
+        },
+        "clean_distribution": {
+            "ham": 4518,
+            "spam": 653
+        }
+    },
+    "split_summary": {
+        "train_size": 4136,
+        "test_size": 1035,
+        "train_class_distribution": {
+            "ham": 3614,
+            "spam": 522
+        },
+        "test_class_distribution": {
+            "ham": 904,
+            "spam": 131
+        }
+    },
+    "primary_model": {
+        "name": "Multinomial Naive Bayes (Baseline)",
+        "architecture": "TfidfVectorizer(ngram_range=(1,2), min_df=2) + MultinomialNB(alpha=0.1)",
+        "metrics": {
+            "accuracy": 0.9874396135265701,
+            "precision_spam": 0.9836065573770492,
+            "recall_spam": 0.916030534351145,
+            "f1_spam": 0.9486166007905138,
+            "roc_auc": 0.9960227656556103
+        },
+        "confusion_matrix": {
+            "true_negative_ham": 902,
+            "false_positive_spam_flagged": 2,
+            "false_negative_spam_missed": 11,
+            "true_positive_spam_caught": 120
+        }
+    },
+    "model_comparison": {
+        "Multinomial Naive Bayes (Baseline)": {
+            "accuracy": 0.9874396135265701,
+            "precision_spam": 0.9836065573770492,
+            "recall_spam": 0.916030534351145,
+            "f1_spam": 0.9486166007905138,
+            "roc_auc": 0.9960227656556103
+        },
+        "Logistic Regression (Extension)": {
+            "accuracy": 0.9777777777777777,
+            "precision_spam": 0.921875,
+            "recall_spam": 0.9007633587786259,
+            "f1_spam": 0.9111969111969112,
+            "roc_auc": 0.995110788353712
+        },
+        "Complement Naive Bayes (Imbalance-Tuned)": {
+            "accuracy": 0.9816425120772947,
+            "precision_spam": 0.9117647058823529,
+            "recall_spam": 0.9465648854961832,
+            "f1_spam": 0.9288389513108615,
+            "roc_auc": 0.9953303384449098
+        },
+        "Linear SVM (Calibrated)": {
+            "accuracy": 0.9826086956521739,
+            "precision_spam": 0.959349593495935,
+            "recall_spam": 0.9007633587786259,
+            "f1_spam": 0.9291338582677166,
+            "roc_auc": 0.996656083226373
+        }
+    }
+}

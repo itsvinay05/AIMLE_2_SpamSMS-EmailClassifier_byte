@@ -3,11 +3,12 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-1.9.1-orange.svg)](https://scikit-learn.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.143.0-009688.svg)](https://fastapi.tiangolo.com/)
+[![Vercel Ready](https://img.shields.io/badge/Vercel-Ready-000000.svg?logo=vercel&logoColor=white)](https://vercel.com/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://www.docker.com/)
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
-[![Tests Passing](https://img.shields.io/badge/tests-9%2F9%20passed-brightgreen.svg)]()
+[![Tests Passing](https://img.shields.io/badge/tests-16%2F16%20passed-brightgreen.svg)]()
 
-A complete, production-grade Natural Language Processing (NLP) text classification system that detects whether incoming messages are **Spam** or **Ham** (legitimate). Built with a leak-free preprocessing pipeline, TF-IDF n-gram vectorization, Multinomial Naive Bayes baseline, multiple candidate model benchmarks, an explainability engine, an adversarial robustness security evaluation, a FastAPI microservice, and an interactive Streamlit Web UI.
+A complete, production-grade Natural Language Processing (NLP) text classification system that detects whether incoming messages are **Spam** or **Ham** (legitimate). Built with a leak-free preprocessing pipeline, TF-IDF n-gram vectorization, Multinomial Naive Bayes baseline, multiple candidate model benchmarks, an explainability engine, an adversarial robustness security evaluation, a FastAPI microservice, an interactive Streamlit Web UI, and a zero-latency full-stack **Vercel Web Application** with serverless endpoints.
 
 ---
 
@@ -354,28 +355,53 @@ docker run -p 8000:8000 -e APP_MODE=api spam-classifier
 
 ---
 
-## 14. Running Automated Tests (9/9 Passing)
+## 14. Vercel Web Application & Serverless API Deployment
 
-To execute the comprehensive automated test suite:
+The project includes a production-ready, full-stack **Vercel Web Application** featuring:
+- **Instant Client-Side Edge Inference (0 ms latency)**: Using precomputed vocabulary IDF and log-likelihood weights (`public/model_export.json`), the browser classifies text in less than 1 millisecond with zero server roundtrips.
+- **Vercel Serverless Python API (`/api/predict`)**: A FastAPI microservice running in Vercel Serverless Functions for automated external system integrations.
+- **Interactive UI Tabs**:
+  1. *Live Classifier*: Real-time SMS and text classification with token signal explainability.
+  2. *Email Scanner*: RFC-822 / MIME email headers and HTML body parsing.
+  3. *Benchmark Suite*: All 13 verified test cases preloaded with 1-click execution.
+  4. *Confusion Matrix & Metrics*: Live rendering of the test matrix and ROC curves.
+  5. *Batch CSV Scorer*: Multi-line message processing and downloadable reports.
+  6. *Threshold Sensitivity*: Dynamic decision threshold tuning ($\theta \in [0.05, 0.95]$).
+  7. *REST API Playground*: Copyable cURL, Python, and JavaScript code snippets.
 
+### Running the Vercel App Locally
 ```bash
-python -m unittest tests/test_classifier.py -v
+# Run local preview server with Uvicorn
+python -m uvicorn api.index:app --host 127.0.0.1 --port 8000
 ```
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your web browser.
 
-All 9 test suites verify:
-1. `test_01_model_loading_and_pipeline_structure`: Pipeline integrity and step contracts.
-2. `test_02_predict_and_proba_contract`: Probability normalization ($\sum P = 1.0$) and array shapes.
-3. `test_03_benchmark_spam_messages`: High-confidence spam detection ($P > 0.85$).
-4. `test_04_benchmark_ham_messages`: Zero false positives on standard ham messages.
-5. `test_05_edge_cases_robustness`: Safe handling of empty text, whitespace, symbols, and 1000+ char strings.
-6. `test_06_email_parser_html_and_headers`: HTML tag stripping and IP link detection.
-7. `test_07_adversarial_perturbation_generators`: Correct transformation of adversarial text.
-8. `test_08_api_handler_endpoints`: FastAPI request/response schema validation and latency calculations.
-9. `test_09_artifacts_and_metrics_file_integrity`: Verification of all saved outputs and reports.
+### Deploying to Vercel (1-Command Deploy)
+```bash
+# 1. Login to your Vercel account
+npx vercel login
+
+# 2. Deploy directly to Vercel production
+npx vercel --prod
+```
 
 ---
 
-## 15. Known Limitations & Technical Discussion
+## 15. Running Automated Tests (16/16 Passing)
+
+To execute the entire automated test suite:
+
+```bash
+python -m unittest discover tests -v
+```
+
+All 16 unit and integration test suites pass with 100% success rate:
+- `tests/test_classifier.py` (9 core pipeline, email parsing, model serialization, and adversarial tests)
+- `tests/test_vercel_api.py` (7 Vercel API, serverless prediction, health check, batch scoring, and threshold sensitivity tests)
+
+---
+
+## 16. Known Limitations & Technical Discussion
 
 1. **Short SMS vs. Long Email Distribution Shift**:
    - The primary dataset contains mobile SMS messages (character lengths typically between 20 and 160 characters).
@@ -391,14 +417,15 @@ All 9 test suites verify:
 
 ---
 
-## 16. Final Submission Checklist Verification
+## 17. Final Submission Checklist Verification
 
-- [x] **GitHub repository structure**: Clean layout with `data/`, `notebooks/`, `src/`, `models/`, `outputs/`, `tests/`, `requirements.txt`, `Dockerfile`, and `README.md`.
+- [x] **GitHub repository structure**: Clean layout with `data/`, `notebooks/`, `src/`, `models/`, `outputs/`, `tests/`, `api/`, `public/`, `vercel.json`, `requirements.txt`, `Dockerfile`, and `README.md`.
 - [x] **Saved serialized model file**: `models/spam_classifier.joblib` (TF-IDF + MultinomialNB pipeline).
 - [x] **Metrics and confusion-matrix images**: Saved to `outputs/confusion_matrix.png`, `outputs/roc_pr_curve.png`, `outputs/model_comparison.png`, and `outputs/adversarial_report.png`.
 - [x] **Example predictions CSV with 10+ rows**: `outputs/example_predictions.csv` with 13 scored predictions.
 - [x] **Short project summary**: Highlighted in Section 2 with exact measured results.
-- [x] **Interactive Demo Web App**: `src/app.py` running live at `http://localhost:8501`.
-- [x] **FastAPI Microservice**: `src/api.py` with Swagger docs at `http://localhost:8000/docs`.
-- [x] **Automated Test Suite**: 9/9 passing tests in `tests/test_classifier.py`.
+- [x] **Vercel Web App**: `public/index.html`, `public/app.js`, `public/style.css`, and `api/index.py` ready for Vercel deployment and local preview.
+- [x] **Interactive Streamlit Web App**: `src/app.py` for local exploration.
+- [x] **FastAPI Microservice**: `src/api.py` and `api/index.py` with Swagger docs.
+- [x] **Automated Test Suite**: 16/16 passing tests in `tests/`.
 

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spam SMS / Email Classifier • Vercel Edition</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="header-container">
+      <div class="logo-area">
+        <div class="logo-icon">🛡️</div>
+        <div class="logo-text">
+          <h1>Spam SMS / Email Classifier</h1>
+          <p>Production NLP Text Classification • Vercel Web Edition</p>
+        </div>
+      </div>
+      <div id="engine-status" class="status-pill">
+        <span class="status-dot"></span> Initializing...
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <div class="tabs-container">
+    <div class="tabs-wrapper">
+      <button class="tab-btn active" data-tab="tab-live">💬 Live Classifier</button>
+      <button class="tab-btn" data-tab="tab-email">✉️ Email Scanner</button>
+      <button class="tab-btn" data-tab="tab-benchmarks">🎯 10+ Benchmark Suite</button>
+      <button class="tab-btn" data-tab="tab-metrics">📊 Evaluation & Confusion Matrix</button>
+      <button class="tab-btn" data-tab="tab-batch">📁 Bulk Batch Scorer</button>
+      <button class="tab-btn" data-tab="tab-tuning">⚙️ Threshold Tuning</button>
+      <button class="tab-btn" data-tab="tab-api">🔌 Vercel REST API</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main>
+
+    <!-- TAB 1: LIVE CLASSIFIER -->
+    <section id="tab-live" class="tab-content active">
+      <div class="grid-2">
+        
+        <!-- Left: Input Form -->
+        <div>
+          <div class="card">
+            <div class="card-title">
+              <span>Message Text Input</span>
+              <div style="font-size:0.8rem; font-weight:normal; color:#64748b;">
+                <label style="margin-right:10px;"><input type="radio" name="engine-select" value="edge" checked> Edge (0ms)</label>
+                <label><input type="radio" name="engine-select" value="serverless"> Vercel API</label>
+              </div>
+            </div>
+            <div class="card-subtitle">Type or paste any SMS message, promotional broadcast, or text snippet to evaluate.</div>
+            <textarea id="message-input" placeholder="e.g. Congratulations! You have won a guaranteed cash prize. Call 08000930705 now to claim..."></textarea>
+            
+            <div class="btn-group">
+              <button id="classify-btn" class="btn btn-primary">⚡ Classify Message</button>
+              <button id="clear-btn" class="btn btn-secondary">Clear</button>
+            </div>
+          </div>
+
+          <!-- Feature Explainability Card -->
+          <div class="card">
+            <div class="card-title">Token Signal Explainability</div>
+            <div class="card-subtitle">Word n-grams and punctuation driving the decision towards Spam (+) or Ham (-):</div>
+            <div id="signal-chips" class="signal-tags">
+              <span style="font-size:0.8rem; color:#94a3b8">Run classification to inspect active feature tokens...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Real-time Results Card -->
+        <div>
+          <div class="card">
+            <div class="card-title">Real-Time Classification Result</div>
+            <div class="card-subtitle">Probabilistic prediction and confidence calibrated score:</div>
+
+            <div id="result-box" class="result-box idle">
+              <div id="result-badge" class="result-badge">--</div>
+              <div id="confidence-text" style="font-size:1.15rem; font-weight:700; color:var(--gray-700); margin-bottom:0.25rem;">Awaiting Input</div>
+              <div id="latency-meta" style="font-size:0.75rem; color:#64748b;">Ready for evaluation</div>
+
+              <div class="confidence-bar-container">
+                <div class="confidence-labels">
+                  <span style="color:#ef4444;">Spam Probability: <strong id="spam-prob-pct">0.0%</strong></span>
+                  <span style="color:#10b981;">Ham Probability: <strong id="ham-prob-pct">0.0%</strong></span>
+                </div>
+                <div class="progress-bar-bg" style="display:flex;">
+                  <div id="spam-bar-fill" class="progress-bar-fill" style="width: 0%; background: #ef4444;"></div>
+                  <div id="ham-bar-fill" class="progress-bar-fill" style="width: 0%; background: #10b981;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Test Samples -->
+            <div style="margin-top: 1.25rem;">
+              <div style="font-size:0.82rem; font-weight:700; color:var(--gray-700); margin-bottom:0.5rem; text-transform:uppercase;">Quick Presets</div>
+              <div id="benchmark-list" class="pill-list"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 2: EMAIL SCANNER -->
+    <section id="tab-email" class="tab-content">
+      <div class="card">
+        <div class="card-title">Raw Email & MIME Content Inspector</div>
+        <div class="card-subtitle">Paste raw email headers, MIME payloads, or HTML bodies to strip styling and classify message intent.</div>
+
+        <textarea id="raw-email-input" style="min-height: 180px;" placeholder="From: security@alerts-security-verify.com&#10;Subject: URGENT: Your banking access has been suspended!&#10;Date: Wed, 14 Oct 2026 10:00:00 +0000&#10;&#10;<html><body>Dear Customer,<br>Please click <a href='http://phish-bank.com'>here</a> immediately to verify your credentials.</body></html>"></textarea>
+        
+        <div class="btn-group">
+          <button id="parse-email-btn" class="btn btn-primary">🔍 Parse & Classify Email</button>
+        </div>
+
+        <div id="email-result-container" style="display:none; margin-top:1.5rem; border-top:1px solid #e2e8f0; padding-top:1.25rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <div style="font-weight:700; font-size:1.05rem;">Parsed Headers & Content</div>
+            <div id="email-result-badge" class="result-badge">--</div>
+          </div>
+          <div style="font-size:0.88rem; line-height:1.6; background:#f8fafc; padding:1rem; border-radius:8px; border:1px solid #e2e8f0;">
+            <p><strong>From:</strong> <span id="email-sender-val">-</span></p>
+            <p><strong>Subject:</strong> <span id="email-subject-val">-</span></p>
+            <p><strong>Cleaned Body:</strong> <span id="email-body-val">-</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: 10+ BENCHMARK SUITE -->
+    <section id="tab-benchmarks" class="tab-content">
+      <div class="card">
+        <div class="card-title">Required 10+ Benchmark Verification Suite</div>
+        <div class="card-subtitle">As specified in the project roadmap, verified against the trained model with measured confidence scores:</div>
+        
+        <div style="overflow-x:auto;">
+          <table class="matrix-table" style="text-align:left;">
+            <thead>
+              <tr>
+                <th style="width:40px;">#</th>
+                <th>Example Input Text</th>
+                <th style="width:120px;">Predicted Label</th>
+                <th style="width:140px;">Confidence Score</th>
+                <th style="width:120px;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Congratulations! You have won a prize. Claim now.</td>
+                <td><span class="pill-tag spam">Spam</span></td>
+                <td><strong>99.97%</strong></td>
+                <td><button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="document.querySelector('.tab-btn[data-tab=\'tab-live\']').click(); document.getElementById('message-input').value='Congratulations! You have won a prize. Claim now.'; runClassification('Congratulations! You have won a prize. Claim now.');">Test Live</button></td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>Are we still meeting at 5 pm?</td>
+                <td><span class="pill-tag ham">Ham</span></td>
+                <td><strong>99.64%</strong></td>
+                <td><button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="document.querySelector('.tab-btn[data-tab=\'tab-live\']').click(); document.getElementById('message-input').value='Are we still meeting at 5 pm?'; runClassification('Are we still meeting at 5 pm?');">Test Live</button></td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>URGENT: claim your free reward today!</td>
+                <td><span class="pill-tag spam">Spam</span></td>
+                <td><strong>99.77%</strong></td>
+                <td><button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="document.querySelector('.tab-btn[data-tab=\'tab-live\']').click(); document.getElementById('message-input').value='URGENT: claim your free reward today!'; runClassification('URGENT: claim your free reward today!');">Test Live</button></td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>Please send me the notes from class.</td>
+                <td><span class="pill-tag ham">Ham</span></td>
+                <td><strong>99.46%</strong></td>
+                <td><button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="document.querySelector('.tab-btn[data-tab=\'tab-live\']').click(); document.getElementById('message-input').value='Please send me the notes from class.'; runClassification('Please send me the notes from class.');">Test Live</button></td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>Your account has been selected for a bonus.</td>
+                <td><span class="pill-tag spam">Spam</span></td>
+                <td><strong>95.33%</strong></td>
+                <td><button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="document.querySelector('.tab-btn[data-tab=\'tab-live\']').click(); document.getElementById('message-input').value='Your account has been selected for a bonus.'; runClassification('Your account has been selected for a bonus.');">Test Live</button></td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>I will call you when I reach home.</td>
+                <td><span class="pill-tag ham">Ham</span></td>
+                <td><strong>99.97%</strong></td>
+                <td><button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="document.querySelector('.tab-btn[data-tab=\'tab-live\']').click(); document.getElementById('message-input').value='I will call you when I reach home.'; runClassification('I will call you when I reach home.');">Test Live</button></td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td>Limited offer! Click the link to get a discount.</td>
+                <td><span class="pill-tag spam">Spam</span></td>
+                <td><strong>93.23%</strong></td>
+                <td><button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="document.querySelector('.tab-btn[data-tab=\'tab-live\']').click(); document.getElementById('message-input').value='Limited offer! Click the link to get a discount.'; runClassification('Limited offer! Click the link to get a discount.');">Test Live</button></td>
+              </tr>
+              <tr>
+                <td>8</td>
+                <td>Can you share the assignment file?</td>
+                <td><span class="pill-tag ham">Ham</span></td>
+                <td><strong>99.25%</strong></td>
+                <td><button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="document.querySelector('.tab-btn[data-tab=\'tab-live\']').click(); document.getElementById('message-input').value='Can you share the assignment file?'; runClassification('Can you share the assignment file?');">Test Live</button></td>
+              </tr>
+              <tr>
+                <td>9</td>
+                <td>You have been selected for a cash reward.</td>
+                <td><span class="pill-tag spam">Spam</span></td>
+                <td><strong>96.39%</strong></td>
+                <td><button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="document.querySelector('.tab-btn[data-tab=\'tab-live\']').click(); document.getElementById('message-input').value='You have been selected for a cash reward.'; runClassification('You have been selected for a cash reward.');">Test Live</button></td>
+              </tr>
+              <tr>
+                <td>10</td>
+                <td>Thanks, see you tomorrow.</td>
+                <td><span class="pill-tag ham">Ham</span></td>
+                <td><strong>99.58%</strong></td>
+                <td><button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="document.querySelector('.tab-btn[data-tab=\'tab-live\']').click(); document.getElementById('message-input').value='Thanks, see you tomorrow.'; runClassification('Thanks, see you tomorrow.');">Test Live</button></td>
+              </tr>
+              <tr>
+                <td>11</td>
+                <td>Hey, can you review the pull request on GitHub before tonight?</td>
+                <td><span class="pill-tag ham">Ham</span></td>
+                <td><strong>99.07%</strong></td>
+                <td><button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="document.querySelector('.tab-btn[data-tab=\'tab-live\']').click(); document.getElementById('message-input').value='Hey, can you review the pull request on GitHub before tonight?'; runClassification('Hey, can you review the pull request on GitHub before tonight?');">Test Live</button></td>
+              </tr>
+              <tr>
+                <td>12</td>
+                <td>IMPORTANT: Your parcel delivery failed. Update your card details at http://scam-delivery.link</td>
+                <td><span class="pill-tag spam">Spam</span></td>
+                <td><strong>94.71%</strong></td>
+                <td><button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="document.querySelector('.tab-btn[data-tab=\'tab-live\']').click(); document.getElementById('message-input').value='IMPORTANT: Your parcel delivery failed. Update your card details at http://scam-delivery.link'; runClassification('IMPORTANT: Your parcel delivery failed. Update your card details at http://scam-delivery.link');">Test Live</button></td>
+              </tr>
+              <tr>
+                <td>13</td>
+                <td>Your Google verification code is 482910. Do not share this with anyone.</td>
+                <td><span class="pill-tag ham">Ham</span></td>
+                <td><strong>92.70%</strong></td>
+                <td><button class="btn btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem;" onclick="document.querySelector('.tab-btn[data-tab=\'tab-live\']').click(); document.getElementById('message-input').value='Your Google verification code is 482910. Do not share this with anyone.'; runClassification('Your Google verification code is 482910. Do not share this with anyone.');">Test Live</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: METRICS & CONFUSION MATRIX -->
+    <section id="tab-metrics" class="tab-content">
+      <div class="metrics-grid">
+        <div class="metric-stat-card">
+          <span class="label">Overall Accuracy</span>
+          <span class="value" style="color:#4f46e5;">98.74%</span>
+          <span class="sub">1,022 / 1,035 correct test predictions</span>
+        </div>
+        <div class="metric-stat-card">
+          <span class="label">Spam Precision</span>
+          <span class="value" style="color:#059669;">98.36%</span>
+          <span class="sub">Only 2 false positives out of 904 ham</span>
+        </div>
+        <div class="metric-stat-card">
+          <span class="label">Spam Recall</span>
+          <span class="value" style="color:#0284c7;">91.60%</span>
+          <span class="sub">120 caught out of 131 actual spam</span>
+        </div>
+        <div class="metric-stat-card">
+          <span class="label">Spam F1-Score</span>
+          <span class="value" style="color:#7c3aed;">94.86%</span>
+          <span class="sub">Harmonic mean of precision & recall</span>
+        </div>
+        <div class="metric-stat-card">
+          <span class="label">ROC-AUC Area</span>
+          <span class="value" style="color:#ea580c;">0.9960</span>
+          <span class="sub">Outstanding class discrimination</span>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Test Set Confusion Matrix (N = 1,035)</div>
+          <div class="card-subtitle">Stratified 80/20 held-out test evaluation:</div>
+          <table class="matrix-table">
+            <thead>
+              <tr>
+                <th rowspan="2" style="background:#e2e8f0;">Actual Ground Truth</th>
+                <th colspan="2">Predicted Label</th>
+              </tr>
+              <tr>
+                <th>Predicted HAM (0)</th>
+                <th>Predicted SPAM (1)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:700;">Actual HAM (904)</td>
+                <td class="matrix-cell-tn">902<br><span style="font-size:0.75rem; font-weight:normal;">True Negative (99.78%)</span></td>
+                <td class="matrix-cell-fp">2<br><span style="font-size:0.75rem; font-weight:normal;">False Positive (0.22%)</span></td>
+              </tr>
+              <tr>
+                <td style="font-weight:700;">Actual SPAM (131)</td>
+                <td class="matrix-cell-fn">11<br><span style="font-size:0.75rem; font-weight:normal;">False Negative (8.40%)</span></td>
+                <td class="matrix-cell-tp">120<br><span style="font-size:0.75rem; font-weight:normal;">True Positive (91.60%)</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Generated ROC & Matrix Artifact</div>
+          <div class="card-subtitle">Saved high-resolution plot from `outputs/confusion_matrix.png`:</div>
+          <img src="confusion_matrix.png" alt="Confusion Matrix" style="width:100%; border-radius:8px; border:1px solid #e2e8f0;">
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: BATCH CLASSIFIER -->
+    <section id="tab-batch" class="tab-content">
+      <div class="card">
+        <div class="card-title">Bulk Message Batch Processor</div>
+        <div class="card-subtitle">Enter one message per line to score an entire queue with batch statistics:</div>
+
+        <textarea id="batch-input" style="min-height: 140px;" placeholder="Congratulations! You won a brand new iPhone. Click now.&#10;Hey dad, will be home by 7pm for dinner.&#10;FREE holiday voucher awarded to your number! Reply CLAIM.&#10;Can we reschedule the team standup to 11am?"></textarea>
+
+        <div class="btn-group">
+          <button id="run-batch-btn" class="btn btn-primary">⚡ Score Batch Messages</button>
+        </div>
+
+        <div id="batch-summary" style="font-weight:700; font-size:0.95rem; margin-top:1.25rem; color:#1e293b;"></div>
+        
+        <table id="batch-results-table" class="matrix-table" style="display:none; text-align:left; margin-top:1rem;">
+          <thead>
+            <tr>
+              <th style="width:50px;">#</th>
+              <th>Message Text</th>
+              <th style="width:120px;">Predicted</th>
+              <th style="width:120px;">Confidence</th>
+            </tr>
+          </thead>
+          <tbody id="batch-results-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 6: THRESHOLD TUNING -->
+    <section id="tab-tuning" class="tab-content">
+      <div class="card">
+        <div class="card-title">Spam Decision Threshold Calibration</div>
+        <div class="card-subtitle">Adjust the probability cutoff $\theta$ at which a message is classified as Spam:</div>
+
+        <div class="slider-container">
+          <span style="font-weight:600; font-size:0.9rem;">High Recall (0.01)</span>
+          <input type="range" id="threshold-slider" min="0.05" max="0.95" step="0.05" value="0.50">
+          <span style="font-weight:600; font-size:0.9rem;">Ultra Precision (0.95)</span>
+          <span style="font-weight:800; font-size:1.1rem; color:var(--primary); min-width:50px;" id="threshold-val">0.50</span>
+        </div>
+
+        <div class="grid-2" style="margin-top:1.5rem;">
+          <div style="background:#f8fafc; padding:1.2rem; border-radius:8px; border:1px solid #e2e8f0;">
+            <h4 style="color:#047857; margin-bottom:0.4rem;">🛡️ Conservative Mode (&gt; 0.70)</h4>
+            <p style="font-size:0.85rem; color:#475569; line-height:1.5;">
+              Minimizes False Positives to near zero (protects urgent transactional emails and banking OTPs). Use this when accidentally flagging a legit message has severe business cost.
+            </p>
+          </div>
+          <div style="background:#f8fafc; padding:1.2rem; border-radius:8px; border:1px solid #e2e8f0;">
+            <h4 style="color:#b91c1c; margin-bottom:0.4rem;">🚨 Aggressive Filter (&lt; 0.35)</h4>
+            <p style="font-size:0.85rem; color:#475569; line-height:1.5;">
+              Maximizes Spam Recall (catches sneaky or low-probability spam). Recommended for suspicious quarantine folders or junk mailboxes.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 7: REST API & CODE -->
+    <section id="tab-api" class="tab-content">
+      <div class="card">
+        <div class="card-title">Vercel Serverless REST API Documentation</div>
+        <div class="card-subtitle">This project deploys a zero-maintenance Python API on Vercel Serverless Functions:</div>
+
+        <h4 style="margin:1rem 0 0.5rem;">1. Single Prediction Endpoint: <code>POST /api/predict</code></h4>
+        <pre><code>curl -X POST "https://your-app.vercel.app/api/predict" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Congratulations! You have won a prize. Claim now.", "threshold": 0.5, "explain": true}'</code></pre>
+
+        <h4 style="margin:1.25rem 0 0.5rem;">2. Python Integration (<code>requests</code>)</h4>
+        <pre><code>import requests
+
+url = "https://your-app.vercel.app/api/predict"
+payload = {
+    "text": "URGENT: claim your free reward today!",
+    "threshold": 0.5,
+    "explain": True
+}
+response = requests.post(url, json=payload).json()
+print("Prediction:", response["predicted_label"])
+print(f"Confidence: {response['confidence']:.2%}")</code></pre>
+
+        <h4 style="margin:1.25rem 0 0.5rem;">3. JavaScript / Frontend Integration (<code>fetch</code>)</h4>
+        <pre><code>const res = await fetch("/api/predict", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ text: "Are we still meeting at 5 pm?" })
+});
+const data = await res.json();
+console.log(data.predicted_label, data.confidence);</code></pre>
+
+        <h4 style="margin:1.25rem 0 0.5rem;">4. How to Deploy to Vercel</h4>
+        <pre><code># 1. Login to your Vercel account
+npx vercel login
+
+# 2. Deploy in one command from repository root
+npx vercel --prod</code></pre>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>Spam SMS / Email Classifier • Developed with Scikit-Learn 1.9.1, FastAPI & Vercel • UCI SMS Spam Collection Benchmark</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

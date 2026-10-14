@@ -1,0 +1,14 @@
+id,input_message,predicted_label,confidence,ham_probability,spam_probability
+1,Congratulations! You have won a prize. Claim now.,Spam,0.9997,0.0003,0.9997
+2,Are we still meeting at 5 pm?,Ham,0.9964,0.9964,0.0036
+3,URGENT: claim your free reward today!,Spam,0.9977,0.0023,0.9977
+4,Please send me the notes from class.,Ham,0.9946,0.9946,0.0054
+5,Your account has been selected for a bonus.,Spam,0.9533,0.0467,0.9533
+6,I will call you when I reach home.,Ham,0.9997,0.9997,0.0003
+7,Limited offer! Click the link to get a discount.,Spam,0.9323,0.0677,0.9323
+8,Can you share the assignment file?,Ham,0.9925,0.9925,0.0075
+9,You have been selected for a cash reward.,Spam,0.9639,0.0361,0.9639
+10,"Thanks, see you tomorrow.",Ham,0.9958,0.9958,0.0042
+11,"Hey, can you review the pull request on GitHub before tonight?",Ham,0.9907,0.9907,0.0093
+12,IMPORTANT: Your parcel delivery failed. Update your card details at http://scam-delivery.link,Spam,0.9471,0.0529,0.9471
+13,Your Google verification code is 482910. Do not share this with anyone.,Ham,0.927,0.927,0.073
