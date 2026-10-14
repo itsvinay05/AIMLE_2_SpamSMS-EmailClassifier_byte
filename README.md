@@ -2,10 +2,12 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-1.9.1-orange.svg)](https://scikit-learn.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.143.0-009688.svg)](https://fastapi.tiangolo.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://www.docker.com/)
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
-[![Tests Passing](https://img.shields.io/badge/tests-6%2F6%20passed-brightgreen.svg)]()
+[![Tests Passing](https://img.shields.io/badge/tests-9%2F9%20passed-brightgreen.svg)]()
 
-A complete, production-grade Natural Language Processing (NLP) text classification system that detects whether incoming messages are **Spam** or **Ham** (legitimate). Built with a leak-free preprocessing pipeline, TF-IDF n-gram vectorization, Multinomial Naive Bayes baseline, multiple candidate model benchmarks, an explainability engine, and an interactive Streamlit Web UI.
+A complete, production-grade Natural Language Processing (NLP) text classification system that detects whether incoming messages are **Spam** or **Ham** (legitimate). Built with a leak-free preprocessing pipeline, TF-IDF n-gram vectorization, Multinomial Naive Bayes baseline, multiple candidate model benchmarks, an explainability engine, an adversarial robustness security evaluation, a FastAPI microservice, and an interactive Streamlit Web UI.
 
 ---
 
@@ -250,19 +252,130 @@ All 10 benchmark test cases were classified with $100\%$ accuracy and high confi
 
 ---
 
-## 9. Running Automated Tests
+## 9. Production REST API Microservice (`src/api.py`)
 
-To run the automated test suite verifying model loading, probability normalization, edge case robustness, and metrics files:
+A production-grade, asynchronous FastAPI backend service is provided for integrating the spam classifier into mobile applications, web relays, and enterprise microservices.
+
+### Launch the REST API
+```bash
+python -m uvicorn src.api:app --reload --port 8000
+```
+* **Interactive OpenAPI / Swagger Documentation**: [http://localhost:8000/docs](http://localhost:8000/docs)
+* **Alternative ReDoc UI**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+
+### API Endpoints
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/` | Service health status and endpoints map |
+| `GET` | `/health` | Health probe checking model load status |
+| `POST` | `/api/v1/predict` | Single message or raw email inference with optional explainability |
+| `POST` | `/api/v1/batch_predict` | High-throughput batch message classification |
+| `GET` | `/api/v1/metrics` | Returns held-out test evaluation JSON |
+
+### Sample cURL Request (Single Prediction):
+```bash
+curl -X POST "http://localhost:8000/api/v1/predict" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "text": "Congratulations! You have won a $1000 prize. Claim now.",
+       "explain": true,
+       "threshold": 0.50
+     }'
+```
+
+---
+
+## 10. Email Parsing & Preprocessing (`src/email_parser.py`)
+
+Real email communications feature MIME headers, HTML formatting, hidden tracking links, and subject lines. The [`src/email_parser.py`](src/email_parser.py) module handles:
+* Extraction of **Subject**, **From**, **To**, and **Date** headers.
+* Stripping of HTML formatting, scripts, and CSS stylesheets while retaining text and link anchors.
+* Extraction of suspicious URLs (IP address URLs and shortened URLs like `bit.ly`, `tinyurl.com`).
+* Combined feature representation with high weighting placed on Subject line keywords.
+
+Run inference directly on raw emails or `.eml` files:
+```bash
+python src/predict.py --message "Subject: Urgent: Verify Account. Click http://192.168.1.1/login" --email --explain
+python src/predict.py --file sample_email.eml --explain
+```
+
+---
+
+## 11. Adversarial Robustness & Evasion Stress-Testing (`src/adversarial_eval.py`)
+
+To evaluate how the model withstands real-world evasion attacks by spammers, we developed an automated adversarial stress-testing suite:
+
+```bash
+python src/adversarial_eval.py
+```
+
+### Evaluated Attack Vectors & Measured Bypass Rates
+| Adversarial Attack Vector | Perturbation Method | Detection Rate | Evasion / Bypass Rate |
+| :--- | :--- | :---: | :---: |
+| **Clean Baseline** | No perturbation applied | **100.0%** | 0.0% |
+| **Token Fragmentation** | Spacing urgent tokens (`"C L A I M"`) | **90.0%** | 10.0% |
+| **Good-Word Dilution** | Stuffing innocent corporate vocabulary | **70.0%** | 30.0% |
+| **Homoglyph Substitution** | Replacing characters with Cyrillic lookalikes | **50.0%** | 50.0% |
+| **Zero-Width Unicode** | Inserting hidden `\u200b` characters | **40.0%** | 60.0% |
+| **Leetspeak Obfuscation** | Substituting letters (`"pr!z3"`, `"cl@im"`) | **30.0%** | 70.0% |
+
+*Results and comparative bar chart are saved to [`outputs/adversarial_report.json`](outputs/adversarial_report.json) and [`outputs/adversarial_report.png`](outputs/adversarial_report.png).*
+
+---
+
+## 12. Batch CSV & Bulk Scoring Mode
+
+Process entire datasets or customer inquiry logs in parallel:
+
+```bash
+python src/predict.py --batch-input input_messages.csv --text-col "message_text" --output-csv outputs/flagged_spam.csv
+```
+
+---
+
+## 13. Docker Containerization (`Dockerfile`)
+
+The project includes a production multi-mode `Dockerfile` supporting both Streamlit Web UI and FastAPI microservice deployments:
+
+### Build Container
+```bash
+docker build -t spam-classifier .
+```
+
+### Run Streamlit Web Application (Port 8501)
+```bash
+docker run -p 8501:8501 spam-classifier
+```
+
+### Run FastAPI Microservice (Port 8000)
+```bash
+docker run -p 8000:8000 -e APP_MODE=api spam-classifier
+```
+
+---
+
+## 14. Running Automated Tests (9/9 Passing)
+
+To execute the comprehensive automated test suite:
 
 ```bash
 python -m unittest tests/test_classifier.py -v
 ```
 
-All 6 test suites execute in $<5$ seconds and verify that edge cases (empty strings, pure punctuation, very long strings) do not throw uncaught exceptions.
+All 9 test suites verify:
+1. `test_01_model_loading_and_pipeline_structure`: Pipeline integrity and step contracts.
+2. `test_02_predict_and_proba_contract`: Probability normalization ($\sum P = 1.0$) and array shapes.
+3. `test_03_benchmark_spam_messages`: High-confidence spam detection ($P > 0.85$).
+4. `test_04_benchmark_ham_messages`: Zero false positives on standard ham messages.
+5. `test_05_edge_cases_robustness`: Safe handling of empty text, whitespace, symbols, and 1000+ char strings.
+6. `test_06_email_parser_html_and_headers`: HTML tag stripping and IP link detection.
+7. `test_07_adversarial_perturbation_generators`: Correct transformation of adversarial text.
+8. `test_08_api_handler_endpoints`: FastAPI request/response schema validation and latency calculations.
+9. `test_09_artifacts_and_metrics_file_integrity`: Verification of all saved outputs and reports.
 
 ---
 
-## 10. Known Limitations & Technical Discussion
+## 15. Known Limitations & Technical Discussion
 
 1. **Short SMS vs. Long Email Distribution Shift**:
    - The primary dataset contains mobile SMS messages (character lengths typically between 20 and 160 characters).
@@ -278,11 +391,14 @@ All 6 test suites execute in $<5$ seconds and verify that edge cases (empty stri
 
 ---
 
-## 11. Final Submission Checklist Verification
+## 16. Final Submission Checklist Verification
 
-- [x] **GitHub repository structure**: Clean layout with `data/`, `notebooks/`, `src/`, `models/`, `outputs/`, `tests/`, `requirements.txt`, and `README.md`.
+- [x] **GitHub repository structure**: Clean layout with `data/`, `notebooks/`, `src/`, `models/`, `outputs/`, `tests/`, `requirements.txt`, `Dockerfile`, and `README.md`.
 - [x] **Saved serialized model file**: `models/spam_classifier.joblib` (TF-IDF + MultinomialNB pipeline).
-- [x] **Metrics and confusion-matrix images**: Saved to `outputs/confusion_matrix.png`, `outputs/roc_pr_curve.png`, and `outputs/model_comparison.png`.
+- [x] **Metrics and confusion-matrix images**: Saved to `outputs/confusion_matrix.png`, `outputs/roc_pr_curve.png`, `outputs/model_comparison.png`, and `outputs/adversarial_report.png`.
 - [x] **Example predictions CSV with 10+ rows**: `outputs/example_predictions.csv` with 13 scored predictions.
 - [x] **Short project summary**: Highlighted in Section 2 with exact measured results.
-- [x] **Interactive Demo Web App**: `src/app.py` ready to launch via `streamlit run src/app.py`.
+- [x] **Interactive Demo Web App**: `src/app.py` running live at `http://localhost:8501`.
+- [x] **FastAPI Microservice**: `src/api.py` with Swagger docs at `http://localhost:8000/docs`.
+- [x] **Automated Test Suite**: 9/9 passing tests in `tests/test_classifier.py`.
+
