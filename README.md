@@ -358,6 +358,9 @@ docker run -p 8000:8000 -e APP_MODE=api spam-classifier
 ## 14. Vercel Web Application & Serverless API Deployment
 
 The project includes a production-ready, full-stack **Vercel Web Application** featuring:
+
+> **Live Production URL**: [https://spam-sms-email-classifier-three.vercel.app](https://spam-sms-email-classifier-three.vercel.app)
+
 - **Instant Client-Side Edge Inference (0 ms latency)**: Using precomputed vocabulary IDF and log-likelihood weights (`public/model_export.json`), the browser classifies text in less than 1 millisecond with zero server roundtrips.
 - **Vercel Serverless Python API (`/api/predict`)**: A FastAPI microservice running in Vercel Serverless Functions for automated external system integrations.
 - **Interactive UI Tabs**:
