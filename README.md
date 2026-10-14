@@ -9,6 +9,9 @@
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 [![Tests Passing](https://img.shields.io/badge/tests-16%2F16%20passed-brightgreen.svg)]()
 
+> 🌐 **Live Web Application**: **[https://spam-sms-email-classifier-three.vercel.app](https://spam-sms-email-classifier-three.vercel.app)**  
+> 📁 **GitHub Repository**: **[https://github.com/itsvinay05/AIMLE_2_SpamSMS-EmailClassifier_byte](https://github.com/itsvinay05/AIMLE_2_SpamSMS-EmailClassifier_byte)**
+
 A complete, production-grade Natural Language Processing (NLP) text classification system that detects whether incoming messages are **Spam** or **Ham** (legitimate). Built with a leak-free preprocessing pipeline, TF-IDF n-gram vectorization, Multinomial Naive Bayes baseline, multiple candidate model benchmarks, an explainability engine, an adversarial robustness security evaluation, a FastAPI microservice, an interactive Streamlit Web UI, and a zero-latency full-stack **Vercel Web Application** with serverless endpoints.
 
 ---
