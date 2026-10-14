@@ -1,0 +1,9 @@
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints
+.git
+.gitignore
+outputs/bulk_scored_test.csv

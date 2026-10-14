@@ -1,0 +1,25 @@
+Spam SMS / Email Classifier - Performance Metrics Report
+============================================================
+
+Test Set Size: 1035 messages
+Test Class Balance: Ham=904, Spam=131
+
+Primary Model: Multinomial Naive Bayes (Baseline)
+  Accuracy:         98.7440%
+  Precision (Spam): 98.3607%
+  Recall (Spam):    91.6031%
+  F1-Score (Spam):  94.8617%
+  ROC-AUC:          99.6023%
+
+Confusion Matrix:
+  True Negative (Ham correctly caught):  902
+  False Positive (Ham misflagged):       2
+  False Negative (Spam missed):          11
+  True Positive (Spam caught):           120
+
+Model Comparison Benchmark:
+                  Model  Accuracy  Precision (Spam)  Recall (Spam)  F1-Score (Spam)
+Multinomial Naive Bayes  0.987440          0.983607       0.916031         0.948617
+    Logistic Regression  0.977778          0.921875       0.900763         0.911197
+ Complement Naive Bayes  0.981643          0.911765       0.946565         0.928839
+             Linear SVM  0.982609          0.959350       0.900763         0.929134

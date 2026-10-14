@@ -1,0 +1,50 @@
+{
+    "Clean Baseline (No Attack)": {
+        "detection_rate": 1.0,
+        "bypass_rate": 0.0,
+        "caught_count": 10,
+        "evaded_count": 0,
+        "avg_spam_probability": 0.9387,
+        "sample_perturbed": "Congratulations! You have won a prize. Claim now."
+    },
+    "Leetspeak Obfuscation (e.g. pr!z3)": {
+        "detection_rate": 0.3,
+        "bypass_rate": 0.7,
+        "caught_count": 3,
+        "evaded_count": 7,
+        "avg_spam_probability": 0.4665,
+        "sample_perturbed": "Congr47ulat!0n$! You have w0n a priz3. Cl@!m n0w."
+    },
+    "Token Fragmentation ('F R E E')": {
+        "detection_rate": 0.9,
+        "bypass_rate": 0.1,
+        "caught_count": 9,
+        "evaded_count": 1,
+        "avg_spam_probability": 0.7971,
+        "sample_perturbed": "Congratulations! You have won a prize. C l a i m now."
+    },
+    "Zero-Width Unicode Insertion": {
+        "detection_rate": 0.4,
+        "bypass_rate": 0.6,
+        "caught_count": 4,
+        "evaded_count": 6,
+        "avg_spam_probability": 0.2789,
+        "sample_perturbed": "C\u200bong\u200brat\u200bula\u200bti\u200bons\u200b! You\u200b have won a prize. Claim\u200b n\u200bo\u200bw\u200b."
+    },
+    "Homoglyph Substitution (Cyrillic)": {
+        "detection_rate": 0.5,
+        "bypass_rate": 0.5,
+        "caught_count": 5,
+        "evaded_count": 5,
+        "avg_spam_probability": 0.5891,
+        "sample_perturbed": "\u0441ongr\u0430tulati\u043ens! \u0443ou hav\u0435 w\u043en \u0430 \u0440riz\u0435. \u0441laim now."
+    },
+    "Good-Word Dilution Attack": {
+        "detection_rate": 0.7,
+        "bypass_rate": 0.3,
+        "caught_count": 7,
+        "evaded_count": 3,
+        "avg_spam_probability": 0.6954,
+        "sample_perturbed": "Congratulations! You have won a prize. Claim now. review document notes tomorrow sincerely update attached contract dinner regards team thanks meeting family office"
+    }
+}

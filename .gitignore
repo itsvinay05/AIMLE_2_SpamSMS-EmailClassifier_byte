@@ -1,0 +1,21 @@
+# Python virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Output temporary files
+outputs/bulk_scored_test.csv
+outputs/batch_scored_results.csv
