@@ -19,3 +19,5 @@ Thumbs.db
 # Output temporary files
 outputs/bulk_scored_test.csv
 outputs/batch_scored_results.csv
+
+.vercel
